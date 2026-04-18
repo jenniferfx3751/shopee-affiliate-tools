@@ -1,13 +1,14 @@
 
 import React,{useState} from 'react';
 export default function App(){
- const [p,setP]=useState(''); const [s,setS]=useState(''); const [v,setV]=useState(''); const [r,setR]=useState('');
- const gen=()=>setR(`Create a cinematic Shopee affiliate promo video featuring Sizuka showcasing ${p}. Scene in ${s}. Mood: ${v}. Focus on product details, smooth camera motion, 9:16 vertical.`);
- return <div className="wrap"><div className="card"><h1>Shopee Affiliate Tools Pro</h1>
- <input placeholder="Produk" value={p} onChange={e=>setP(e.target.value)} />
- <input placeholder="Setting" value={s} onChange={e=>setS(e.target.value)} />
- <input placeholder="Vibe" value={v} onChange={e=>setV(e.target.value)} />
- <button onClick={gen}>Generate Prompt</button>
- <textarea readOnly value={r} placeholder="Hasil prompt..." />
- </div></div>
-}
+const [product,setProduct]=useState('');const [setting,setSetting]=useState('');const [vibe,setVibe]=useState('');const [out,setOut]=useState('');
+const gen=()=>setOut(`Create a premium Shopee affiliate video for ${product}. Scene: ${setting}. Mood: ${vibe}. Use uploaded model and product references.`);
+return <div style={{padding:'20px',fontFamily:'Arial'}}><h1>SizukaShop AI Prompt Premium</h1>
+<label>Upload Foto Sizuka<input type='file'/></label><br/><br/>
+<label>Upload Foto Produk<input type='file'/></label><br/><br/>
+<input placeholder='Produk' value={product} onChange={e=>setProduct(e.target.value)} /><br/><br/>
+<input placeholder='Setting' value={setting} onChange={e=>setSetting(e.target.value)} /><br/><br/>
+<input placeholder='Vibe' value={vibe} onChange={e=>setVibe(e.target.value)} /><br/><br/>
+<button onClick={gen}>Generate Prompt</button><br/><br/>
+<textarea value={out} readOnly rows='10' cols='60'/>
+</div>}
