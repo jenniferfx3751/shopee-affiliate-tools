@@ -1,20 +1,43 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { product, setting, vibe } = req.body;
+  const { modelImage, productImage, setting, vibe } = req.body;
 
   try {
-    const response = await fetch(process.env.AI_BASE_URL + '/v1/responses', {
-      method: 'POST',
+    const response = await fetch(process.env.AI_BASE_URL + "/v1/responses", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + process.env.AI_API_KEY
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + process.env.AI_API_KEY
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
-        input: `Buat prompt affiliate Shopee yang menjual untuk produk ${product}, setting ${setting}, vibe ${vibe}. Beri hook, prompt gambar, prompt video, hashtag.`
+        model: "openai/gpt-4o-mini",
+        input: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text:
+                  "Analyze these reference images. First image is model reference, second image is product reference. Create premium image generation prompt based on both images. Setting: " +
+                  setting +
+                  ". Mood: " +
+                  vibe +
+                  "."
+              },
+              {
+                type: "input_image",
+                image_url: modelImage
+              },
+              {
+                type: "input_image",
+                image_url: productImage
+              }
+            ]
+          }
+        ]
       })
     });
 
@@ -23,11 +46,9 @@ export default async function handler(req, res) {
     const txt =
       data.output_text ||
       data.output?.[0]?.content?.[0]?.text ||
-      data.choices?.[0]?.message?.content ||
-      'Gagal generate output';
+      "No output";
 
     res.status(200).json({ result: txt });
-
   } catch (e) {
     res.status(500).json({ error: e.toString() });
   }
