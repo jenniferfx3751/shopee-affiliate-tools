@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const [model, setModel] = useState(null);
-  const [productRef, setProductRef] = useState(null);
-
+  const [model, setModel] = useState("");
   const [product, setProduct] = useState("");
-  const [location, setLocation] = useState("");
-  const [mood, setMood] = useState("");
+
+  const [setting, setSetting] = useState("");
+  const [vibe, setVibe] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState("");
 
-  const loadImage = (e, setter) => {
-    const file = e.target.files[0];
-    if (file) setter(URL.createObjectURL(file));
+  const fileToBase64 = (file, setter) => {
+    const reader = new FileReader();
+    reader.onloadend = () => setter(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const createPrompt = async () => {
@@ -26,87 +26,53 @@ export default function App() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          product,
-          setting: location,
-          vibe: mood
+          modelImage: model,
+          productImage: product,
+          setting,
+          vibe
         })
       });
 
       const d = await r.json();
       setOutput(d.result || "No output");
-    } catch (err) {
-      setOutput("Connection failed.");
+    } catch {
+      setOutput("Connection failed");
     }
 
     setLoading(false);
   };
 
-  const copyText = async () => {
-    await navigator.clipboard.writeText(output);
-  };
-
   return (
     <div className="app">
       <div className="container">
-
-        <h1>SizukaShop Prompt 🔥</h1>
-        <p className="sub">Creator Workflow</p>
+        <h1>SizukaShop Vision 🔥</h1>
+        <p className="sub">AI Analyze Reference Images</p>
 
         <div className="grid2">
-
           <div className="card">
-            <h3>Model Reference</h3>
-            <input type="file" onChange={(e) => loadImage(e, setModel)} />
-            <div className="preview">
-              {model ? <img src={model} alt="" /> : "Upload model image"}
-            </div>
+            <h3>Model Image</h3>
+            <input type="file" onChange={(e)=>fileToBase64(e.target.files[0],setModel)} />
           </div>
 
           <div className="card">
-            <h3>Product Reference</h3>
-            <input type="file" onChange={(e) => loadImage(e, setProductRef)} />
-            <div className="preview">
-              {productRef ? <img src={productRef} alt="" /> : "Upload product image"}
-            </div>
+            <h3>Product Image</h3>
+            <input type="file" onChange={(e)=>fileToBase64(e.target.files[0],setProduct)} />
           </div>
-
         </div>
 
-        <div className="grid3">
-
-          <input
-            placeholder="Product"
-            value={product}
-            onChange={(e) => setProduct(e.target.value)}
-          />
-
-          <input
-            placeholder="Location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-
-          <input
-            placeholder="Mood"
-            value={mood}
-            onChange={(e) => setMood(e.target.value)}
-          />
-
+        <div className="grid2">
+          <input placeholder="Location" value={setting} onChange={(e)=>setSetting(e.target.value)} />
+          <input placeholder="Mood" value={vibe} onChange={(e)=>setVibe(e.target.value)} />
         </div>
 
         <button className="mainbtn" onClick={createPrompt}>
-          {loading ? "Creating..." : "Create Prompt"}
+          {loading ? "Analyzing..." : "Analyze & Create Prompt"}
         </button>
 
         <div className="card">
-          <div className="toprow">
-            <h3>Output</h3>
-            <button onClick={copyText}>Copy</button>
-          </div>
-
-          <textarea readOnly value={output} />
+          <h3>Output</h3>
+          <textarea readOnly value={output}></textarea>
         </div>
-
       </div>
     </div>
   );
