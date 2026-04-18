@@ -12,7 +12,18 @@ export default function App() {
 
   const fileToBase64 = (file, setter) => {
     const reader = new FileReader();
-    reader.onloadend = () => setter(reader.result);
+    reader.onloadend = () => {
+  let base64 = reader.result;
+
+  if (base64.startsWith("data:application/octet-stream")) {
+    base64 = base64.replace(
+      "data:application/octet-stream",
+      "data:image/png"
+    );
+  }
+
+  setter(base64);
+};
     reader.readAsDataURL(file);
   };
 
