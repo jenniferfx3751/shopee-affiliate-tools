@@ -3,9 +3,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { modelImage, productImage, setting, vibe } = req.body;
-
   try {
+    const { modelImage, productImage, setting, vibe } = req.body;
+
     const response = await fetch(process.env.AI_BASE_URL + "/v1/responses", {
       method: "POST",
       headers: {
@@ -21,11 +21,10 @@ export default async function handler(req, res) {
               {
                 type: "input_text",
                 text:
-                  "Analyze these reference images. First image is model reference, second image is product reference. Create premium image generation prompt based on both images. Setting: " +
+                  "Analyze these images and create one premium prompt. Setting: " +
                   setting +
                   ". Mood: " +
-                  vibe +
-                  "."
+                  vibe
               },
               {
                 type: "input_image",
@@ -43,12 +42,17 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-res.status(200).json({
- raw: data,
- result:
-   data.output_text ||
-   data.output?.[0]?.content?.[0]?.text ||
-   JSON.stringify(data)
-});
+    const txt =
+      data.output_text ||
+      data.output?.[0]?.content?.[0]?.text ||
+      data.choices?.[0]?.message?.content ||
+      JSON.stringify(data);
+
+    return res.status(200).json({ result: txt });
+
+  } catch (error) {
+    return res.status(500).json({
+      error: error.toString()
+    });
   }
 }
