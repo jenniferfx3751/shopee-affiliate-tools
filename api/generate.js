@@ -43,13 +43,12 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    const txt =
-      data.output_text ||
-      data.output?.[0]?.content?.[0]?.text ||
-      "No output";
-
-    res.status(200).json({ result: txt });
-  } catch (e) {
-    res.status(500).json({ error: e.toString() });
+res.status(200).json({
+ raw: data,
+ result:
+   data.output_text ||
+   data.output?.[0]?.content?.[0]?.text ||
+   JSON.stringify(data)
+});
   }
 }
