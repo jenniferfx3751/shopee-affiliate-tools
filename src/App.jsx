@@ -62,7 +62,7 @@ App.jsx (frontend replacement)
 =============================== */
 import React, { useState } from "react";
 
-export function App() {
+export default function App() {
   const [modelImage, setModelImage] = useState(null);
   const [productImage, setProductImage] = useState(null);
   const [product, setProduct] = useState("");
